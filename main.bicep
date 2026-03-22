@@ -3,9 +3,11 @@ param location string = 'westus2'
 param environmentTag string = 'Demo'
 param vmAdminUsername string = 'azureadmin'
 
+@secure()
+param vmAdminPassword string
+
 // Variables
 var vmName = 'vm-security-demo'
-var rgName = 'rg-security-demo'
 var nsgName = 'vm-security-demo-nsg'
 var vnetName = 'vm-security-demo-vnet'
 var workspaceName = 'law-security-demo'
@@ -21,7 +23,6 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10
     retentionInDays: 30
   }
 }
-
 
 // Network Security Group
 resource nsg 'Microsoft.Network/networkSecurityGroups@2022-07-01' = {
@@ -118,7 +119,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2022-08-01' = {
     osProfile: {
       computerName: 'vm-sec-demo'
       adminUsername: vmAdminUsername
-      adminPassword: 'Demo@zure2025!'
+      adminPassword: vmAdminPassword
     }
     storageProfile: {
       imageReference: {
