@@ -31,7 +31,6 @@ jobs:
           scope: resourcegroup
           resourceGroupName: ${{ env.RESOURCE_GROUP }}
           template: ${{ env.BICEP_FILE }}
-          parameters: adminPassword=${{ secrets.VM_ADMIN_PASSWORD }}
           deploymentMode: Validate
 
       - name: Deploy Bicep to Azure
@@ -40,7 +39,6 @@ jobs:
           scope: resourcegroup
           resourceGroupName: ${{ env.RESOURCE_GROUP }}
           template: ${{ env.BICEP_FILE }}
-          parameters: adminPassword=${{ secrets.VM_ADMIN_PASSWORD }}
           deploymentName: github-actions-${{ github.run_number }}
           failOnStdErr: false
 
