@@ -1,0 +1,50 @@
+name: Deploy Azure Security Demo (Bicep)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  RESOURCE_GROUP: rg-security-demo
+  LOCATION: eastus2
+  BICEP_FILE: main.bicep
+
+jobs:
+  deploy:
+    name: Validate & Deploy Bicep
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Validate Bicep template
+        uses: azure/arm-deploy@v2
+        with:
+          scope: resourcegroup
+          resourceGroupName: ${{ env.RESOURCE_GROUP }}
+          template: ${{ env.BICEP_FILE }}
+          parameters: adminPassword=${{ secrets.VM_ADMIN_PASSWORD }}
+          deploymentMode: Validate
+
+      - name: Deploy Bicep to Azure
+        uses: azure/arm-deploy@v2
+        with:
+          scope: resourcegroup
+          resourceGroupName: ${{ env.RESOURCE_GROUP }}
+          template: ${{ env.BICEP_FILE }}
+          parameters: adminPassword=${{ secrets.VM_ADMIN_PASSWORD }}
+          deploymentName: github-actions-${{ github.run_number }}
+          failOnStdErr: false
+
+      - name: Deployment complete
+        run: |
+          echo "Bicep deployment succeeded"
+          echo "Resource Group: ${{ env.RESOURCE_GROUP }}"
